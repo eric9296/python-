@@ -1,34 +1,70 @@
-import urllib.request as req   #我們用ullib模組
+import urllib.request as req	#匯入ullib模組
+
 url="https://nidss.cdc.gov.tw/ch/NIDSS_DiseaseMap.aspx?dc=1&dt=5&disease=19CoV&fbclid=IwAR1RheO5u6OEteV-PNs_EvWgaLq-IvgvwkIHhf2lncmtp0ffbapSrsPejJo"
-#將網址放在url的變數
+url2="https://zh.wikipedia.org/wiki/%E8%87%BA%E7%81%A3%E8%A1%8C%E6%94%BF%E5%8D%80%E4%BA%BA%E5%8F%A3%E5%AF%86%E5%BA%A6%E8%A1%A8"
+#將網址放在分別放在url以及url2變數
+
 request=req.Request(url, headers={
-    "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36" #由於我們要一直抓取資料，避免被系統認為我們是惡意程式，因此我們必須告訴網站我們是誰。
-})
+    "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36" })
+request=req.Request(url2, headers={
+    "User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36"})
+#由於我們要一直抓取資料，避免被系統認為我們是惡意程式，因此我們必須告訴網站我們是誰。
 
 with req.urlopen(url) as response:
-    data=response.read().decode("utf-8")#這裡是將url以uf8以中文呈現
-import bs4
+    data=response.read().decode("utf-8")
+with req.urlopen(url2) as response:
+    data2=response.read().decode("utf-8")
+#這裡是將資料以uf8(中文)中文呈現
+
+import bs4    #使用beautifulsoup模組來解析網頁的html
+
 root=bs4.BeautifulSoup(data, "html.parser")
+root2=bs4.BeautifulSoup(data2, "html.parser")
+#這裡利用bs4模組的parser模組來解析html
+
 titles=root.find_all("td",align='center')
+titles2=root2.find_all("td",align='right')
+#尋找資料位於td標籤的align='center'
+
 str1=str(titles)
+str2=str(titles2)
+#把資料轉成字串
+
 import re
+
 ste = re.sub("[A-Za-z\!\%\[\]\。\<\>\"\=\/\,]", "", str1)
+ste2 = re.sub("[A-Za-z\!\%\[\]\。\<\>\"\=\/\,]", "", str2)
+#去除資料抓下來後不需要的字元
+
 sick=list(map(str, ste.split()))
-print(sick)
+people=list(map(str, ste2.split()))
+#把字串存成陣列模式
+
 import csv
 
 city =['台北市','台中市','台南市','高雄市','基隆市','新竹市','嘉義市','新北市','桃園市','新竹縣','宜蘭縣','苗栗縣','彰化縣','南投縣','雲林縣','嘉義縣','屏東縣','澎湖縣','花蓮縣','台東縣','金門縣','連江縣']
+city2 =['臺北市','嘉義市','新竹市','基隆市','新北市','桃園市','臺中市','彰化縣','高雄市','金門縣','臺南市','澎湖縣','雲林縣','連江縣','新竹縣','苗栗縣','屏東縣','嘉義縣','宜蘭縣','南投縣','花蓮縣','臺東縣']
 
+with open('k1.csv','w', newline='') as csvfile:    #這裡是使用csv檔的w(讀寫模式)來存放資料
 
-with open('kkk.csv','w', newline='') as csvfile:
-
-     fieldnames = ['縣市別','病例數']
+     fieldnames = ['縣市別','病例數']	  #fielfnames是位於Excel最上方行列的名稱
 
      thewriter = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
      thewriter.writeheader()
 
      for i in range(0,22):
-        thewriter.writerow({'縣市別':city[i],'病例數':sick[i]})
+        thewriter.writerow({'縣市別':city[i],'病例數':sick[i]})    #把city陣列和sick陣列的第i格裡的內容放入Excel檔裡
         
 
+
+with open('k2.csv','w', newline='') as csvfile:
+
+     fieldnames = ['縣市別','人口密度']
+
+     thewriter = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+     thewriter.writeheader()
+
+     for i in range(0,22):
+        thewriter.writerow({'縣市別':city2[i],'人口密度':people[i]})
