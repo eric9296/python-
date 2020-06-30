@@ -1,4 +1,5 @@
 import urllib.request as req	#匯入ullib模組
+import time 
 
 url="https://nidss.cdc.gov.tw/ch/NIDSS_DiseaseMap.aspx?dc=1&dt=5&disease=19CoV&fbclid=IwAR1RheO5u6OEteV-PNs_EvWgaLq-IvgvwkIHhf2lncmtp0ffbapSrsPejJo"
 url2="https://zh.wikipedia.org/wiki/%E8%87%BA%E7%81%A3%E8%A1%8C%E6%94%BF%E5%8D%80%E4%BA%BA%E5%8F%A3%E5%AF%86%E5%BA%A6%E8%A1%A8"
@@ -67,4 +68,7 @@ with open('k2.csv','w', newline='') as csvfile:
      thewriter.writeheader()
 
      for i in range(0,22):
+     
+   
         thewriter.writerow({'縣市別':city2[i],'人口密度':people[i]})
+time.sleep(3600)
